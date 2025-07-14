@@ -1,3 +1,4 @@
+import 'package:edumate_native/core/token_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/services/auth_service.dart';
@@ -17,7 +18,7 @@ class AuthController extends StateNotifier<bool> {
     state = true;
     try {
       final token = await _authService.login(email, password);
-      print('Zalogowano: $token');
+      await TokenStorage.saveToken(token);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Zalogowano pomyślnie')));

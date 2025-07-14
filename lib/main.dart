@@ -1,19 +1,27 @@
+import 'package:edumate_native/core/token_storage.dart';
 import 'package:edumate_native/features/auth/presentation/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final token = await TokenStorage.getToken();
+  runApp(
+    ProviderScope(child: MyApp(initialRoute: token != null ? 'home' : 'login')),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+
+  const MyApp({super.key, required this.initialRoute});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      initialRoute: initialRoute,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -33,6 +41,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const LoginScreen(),
+      routes: {
+        'login': (_) => const LoginScreen(),
+        'home': (_) => const MyHomePage(title: "My homepahe"),
+      },
     );
   }
 }
