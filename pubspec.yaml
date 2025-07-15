@@ -33,6 +33,7 @@ dependencies:
   dio:
   logger:
   flutter_riverpod:
+  go_router: ^16.0.0 # or the latest version
   flutter_secure_storage: ^9.0.0 # or the latest version
 
   # The following adds the Cupertino Icons font to your application.

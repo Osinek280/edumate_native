@@ -1,50 +1,121 @@
 import 'package:edumate_native/core/token_storage.dart';
 import 'package:edumate_native/features/auth/presentation/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final token = await TokenStorage.getToken();
-  runApp(
-    ProviderScope(child: MyApp(initialRoute: token != null ? 'home' : 'login')),
+  try {
+    final token = await TokenStorage.getToken();
+    final router = createRouter(token);
+    runApp(ProviderScope(child: MyApp(router: router)));
+  } catch (e) {
+    // Fallback to a default router if there's any error
+    final router = createRouter(null);
+    runApp(ProviderScope(child: MyApp(router: router)));
+  }
+}
+
+GoRouter createRouter(String? token) {
+  return GoRouter(
+    initialLocation: token == null ? '/login' : '/home',
+    redirect: (context, state) {
+      final loggedIn = token != null && token.isNotEmpty;
+      final goingToLogin = state.uri.toString() == '/login';
+
+      if (!loggedIn && !goingToLogin) return '/login';
+      if (loggedIn && goingToLogin) return '/home';
+      return null;
+    },
+    routes: [
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      ShellRoute(
+        builder: (context, state, child) => MainScaffold(child: child),
+        routes: [
+          GoRoute(
+            path: '/home',
+            builder: (context, state) => MyHomePage(title: "My Home Page"),
+          ),
+          GoRoute(
+            path: '/search',
+            builder: (context, state) => Scaffold(
+              appBar: AppBar(title: const Text('Search')),
+              body: const Center(child: Text('Search Screen')),
+            ),
+          ),
+          GoRoute(
+            path: '/profile',
+            builder: (context, state) => Scaffold(
+              appBar: AppBar(title: const Text("Profile")),
+              body: const Center(child: Text('Profile Screen')),
+            ),
+          ),
+        ],
+      ),
+    ],
   );
 }
 
-class MyApp extends StatelessWidget {
-  final String initialRoute;
+class MainScaffold extends StatelessWidget {
+  final Widget child;
+  MainScaffold({required this.child});
 
-  const MyApp({super.key, required this.initialRoute});
+  int _calculateSelectedIndex(BuildContext context) {
+    final location = GoRouter.of(
+      context,
+    ).routerDelegate.currentConfiguration.fullPath;
+    if (location.startsWith('/search')) return 1;
+    if (location.startsWith('/profile')) return 2;
+    return 0;
+  }
+
+  void _onItemTapped(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        context.go('/home');
+        break;
+      case 1:
+        context.go('/search');
+        break;
+      case 2:
+        context.go('/profile');
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedIndex = _calculateSelectedIndex(context);
+
+    return Scaffold(
+      body: child,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: selectedIndex,
+        onTap: (index) => _onItemTapped(context, index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ],
+      ),
+    );
+  }
+}
+
+class MyApp extends StatelessWidget {
+  final GoRouter router;
+  const MyApp({super.key, required this.router});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
-      initialRoute: initialRoute,
+      routerConfig: router,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const LoginScreen(),
-      routes: {
-        'login': (_) => const LoginScreen(),
-        'home': (_) => const MyHomePage(title: "My homepahe"),
-      },
     );
   }
 }
