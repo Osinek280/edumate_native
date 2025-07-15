@@ -11,11 +11,21 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/home',
     redirect: (context, state) {
-      final loggedIn = ref.watch(authControllerProvider);
+      final authState = ref.watch(authControllerProvider);
       final goingToLogin = state.uri.toString() == '/login';
-      if (!loggedIn && !goingToLogin) return '/login';
-      if (loggedIn && goingToLogin) return '/home';
+
+      if (authState.isLoading) return null;
+
+      if (!authState.loggedIn && !goingToLogin) return '/login';
+      if (authState.loggedIn && goingToLogin) return '/home';
       return null;
+
+      // final loggedIn = ref.watch(authControllerProvider);
+      // final goingToLogin = state.uri.toString() == '/login';
+      // print('Redirecting: loggedIn=$loggedIn, goingToLogin=$goingToLogin');
+      // if (!loggedIn && !goingToLogin) return '/login';
+      // if (loggedIn && goingToLogin) return '/home';
+      // return null;
     },
     routes: [
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
