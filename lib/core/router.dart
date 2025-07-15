@@ -1,16 +1,18 @@
 import 'package:edumate_native/core/main_scaffold.dart';
+import 'package:edumate_native/features/auth/controller/auth_controller.dart';
 import 'package:edumate_native/features/auth/presentation/login_screen.dart';
+import 'package:edumate_native/features/auth/presentation/profile_screen.dart';
 import 'package:edumate_native/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-GoRouter createRouter(String? token) {
+final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: token == null ? '/login' : '/home',
+    initialLocation: '/home',
     redirect: (context, state) {
-      final loggedIn = token != null && token.isNotEmpty;
+      final loggedIn = ref.watch(authControllerProvider);
       final goingToLogin = state.uri.toString() == '/login';
-
       if (!loggedIn && !goingToLogin) return '/login';
       if (loggedIn && goingToLogin) return '/home';
       return null;
@@ -33,13 +35,10 @@ GoRouter createRouter(String? token) {
           ),
           GoRoute(
             path: '/profile',
-            builder: (context, state) => Scaffold(
-              appBar: AppBar(title: const Text("Profile")),
-              body: const Center(child: Text('Profile Screen')),
-            ),
+            builder: (context, state) => const ProfileScreen(),
           ),
         ],
       ),
     ],
   );
-}
+});

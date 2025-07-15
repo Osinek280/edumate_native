@@ -1,6 +1,7 @@
 import 'package:edumate_native/core/token_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../data/services/auth_service.dart';
 
 final authControllerProvider = StateNotifierProvider<AuthController, bool>((
@@ -19,13 +20,30 @@ class AuthController extends StateNotifier<bool> {
     try {
       final token = await _authService.login(email, password);
       await TokenStorage.saveToken(token);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Zalogowano pomyślnie')));
+      // ScaffoldMessenger.of(
+      //   context,
+      // ).showSnackBar(const SnackBar(content: Text('Zalogowano pomyślnie')));
+      context.go('/home');
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Login nie działa: $e')));
+      // ScaffoldMessenger.of(
+      //   context,
+      // ).showSnackBar(SnackBar(content: Text('Login nie działa: $e')));
+    }
+    state = false;
+  }
+
+  void logout(BuildContext context) async {
+    state = true;
+    try {
+      await TokenStorage.clearToken();
+      // ScaffoldMessenger.of(
+      //   context,
+      // ).showSnackBar(const SnackBar(content: Text('Wylogowano pomyślnie')));
+      context.go('/login');
+    } catch (e) {
+      // ScaffoldMessenger.of(
+      //   context,
+      // ).showSnackBar(SnackBar(content: Text('Logout nie działa: $e')));
     }
     state = false;
   }

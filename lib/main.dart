@@ -1,27 +1,20 @@
 import 'package:edumate_native/core/router.dart';
-import 'package:edumate_native/core/token_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    final token = await TokenStorage.getToken();
-    final router = createRouter(token);
-    runApp(ProviderScope(child: MyApp(router: router)));
-  } catch (e) {
-    final router = createRouter(null);
-    runApp(ProviderScope(child: MyApp(router: router)));
-  }
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
-  final GoRouter router;
-  const MyApp({super.key, required this.router});
+class MyApp extends ConsumerWidget {
+  // final GoRouter router;
+  const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
     return MaterialApp.router(
       title: 'Flutter Demo',
       routerConfig: router,
