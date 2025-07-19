@@ -1,9 +1,9 @@
 import 'package:edumate_native/core/main_scaffold.dart';
-import 'package:edumate_native/data/services/book_service.dart';
 import 'package:edumate_native/features/auth/controller/auth_controller.dart';
 import 'package:edumate_native/features/auth/presentation/login_screen.dart';
 import 'package:edumate_native/features/auth/presentation/profile_screen.dart';
-import 'package:edumate_native/features/book/presentation/book_list.dart';
+import 'package:edumate_native/features/book/controller/book_controller.dart';
+import 'package:edumate_native/features/book/presentation/book_screen.dart';
 import 'package:edumate_native/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
