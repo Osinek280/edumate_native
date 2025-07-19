@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 class MainScaffold extends StatelessWidget {
   final Widget child;
-  MainScaffold({required this.child});
+  const MainScaffold({super.key, required this.child});
 
   int _calculateSelectedIndex(BuildContext context) {
     final location = GoRouter.of(
