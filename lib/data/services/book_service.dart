@@ -6,11 +6,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class BookService {
   final DioClient _client = DioClient();
 
-  Future<List<Book>> get() async {
+  Future<List<Book>> get({String? search}) async {
     try {
-      final res = await _client.get('/api/books');
-      final List<dynamic> data = res.data;
-      return data.map((json) => Book.fromJson(json)).toList();
+      final queryParameters = <String, dynamic>{};
+      if (search != null && search.isNotEmpty) {
+        queryParameters['search'] = search;
+      }
+      final res = await _client.get(
+        '/api/books',
+        queryParameters: queryParameters,
+      );
+      final List<dynamic> data = res.data as List;
+      return data
+          .map((json) => Book.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw Exception('Coś sie zjebało: ${e.response?.data}');
     }
@@ -20,8 +29,3 @@ class BookService {
 final BookServiceProvider = Provider<BookService>((ref) {
   return BookService();
 });
-
-// final booksProvider = FutureProvider<List<Book>>((ref) async {
-//   final service = ref.read(BookServiceProvider);
-//   return service.get();
-// });
