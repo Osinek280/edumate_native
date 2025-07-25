@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final booksProvider = FutureProvider<List<Book>>((ref) async {
   final service = ref.read(BookServiceProvider);
-  return service.get();
+  return service.getBooks();
 });
 
 // import 'package:flutter_riverpod/flutter_riverpod.dart';

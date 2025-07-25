@@ -2,6 +2,8 @@ import 'package:edumate_native/data/models/book.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
+import 'package:go_router/go_router.dart';
+
 class BookCard extends StatelessWidget {
   final Book book;
 
@@ -11,16 +13,8 @@ class BookCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Przyszłościowo: nawigacja do szczegółów książki
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Otwieranie: ${book.title}'),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        );
+        print('Navigating to book details for ${book.id}');
+        context.go('/book/${book.id}');
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

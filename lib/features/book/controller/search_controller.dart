@@ -11,7 +11,7 @@ final debouncedSearchProvider = FutureProvider<List<Book>>((ref) async {
 
   if (query.isEmpty) {
     // Jeśli brak query, pobierz wszystkie książki
-    return bookService.get();
+    return bookService.getBooks();
   }
 
   // Symulacja debounce - możesz dostosować czas
@@ -22,5 +22,5 @@ final debouncedSearchProvider = FutureProvider<List<Book>>((ref) async {
     throw Exception('Query changed during debounce');
   }
 
-  return bookService.get(search: query);
+  return bookService.getBooks(search: query);
 });

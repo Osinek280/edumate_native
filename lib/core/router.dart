@@ -2,8 +2,8 @@ import 'package:edumate_native/core/main_scaffold.dart';
 import 'package:edumate_native/features/auth/controller/auth_controller.dart';
 import 'package:edumate_native/features/auth/presentation/login_screen.dart';
 import 'package:edumate_native/features/auth/presentation/profile_screen.dart';
-import 'package:edumate_native/features/book/controller/book_controller.dart';
 import 'package:edumate_native/features/book/presentation/book_screen.dart';
+import 'package:edumate_native/features/book/presentation/units_screen.dart';
 import 'package:edumate_native/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -35,7 +35,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) {
               return Consumer(
                 builder: (context, ref, _) {
-                  ref.refresh(booksProvider);
                   return const BooksScreen();
                 },
               );
@@ -44,6 +43,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/profile',
             builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            path: '/book/:id',
+            builder: (context, state) {
+              final bookId = state.pathParameters['id']!;
+              return UnitsScreen(bookId: bookId);
+            },
           ),
         ],
       ),
