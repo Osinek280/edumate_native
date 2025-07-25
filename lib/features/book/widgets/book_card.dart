@@ -1,6 +1,6 @@
+import 'package:edumate_native/core/widgets/image_builder.dart';
 import 'package:edumate_native/data/models/book.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 import 'package:go_router/go_router.dart';
 
@@ -44,7 +44,11 @@ class BookCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),
-                  child: _buildCoverImage(book.coverImage),
+                  child: ImageBuilder(
+                    imageUrl: book.coverImage,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
                 ),
               ),
             ),
@@ -109,69 +113,5 @@ class BookCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildCoverImage(String coverImage) {
-    if (coverImage.isEmpty) {
-      return const Center(
-        child: Icon(Icons.book_outlined, size: 48, color: Color(0xFF9CA3AF)),
-      );
-    }
-
-    final isBase64 = !_isProbablyUrl(coverImage);
-
-    if (isBase64) {
-      try {
-        return Image.memory(
-          base64Decode(coverImage),
-          width: double.infinity,
-          height: double.infinity,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Center(
-            child: Icon(
-              Icons.broken_image_outlined,
-              size: 48,
-              color: Color(0xFF9CA3AF),
-            ),
-          ),
-        );
-      } catch (e) {
-        debugPrint('❌ Błąd dekodowania base64: $e');
-        return const Center(
-          child: Icon(
-            Icons.broken_image_outlined,
-            size: 48,
-            color: Color(0xFF9CA3AF),
-          ),
-        );
-      }
-    }
-
-    return Image.network(
-      coverImage,
-      width: double.infinity,
-      height: double.infinity,
-      fit: BoxFit.cover,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return const Center(
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
-          ),
-        );
-      },
-      errorBuilder: (_, __, ___) => const Center(
-        child: Icon(
-          Icons.image_not_supported_outlined,
-          size: 48,
-          color: Color(0xFF9CA3AF),
-        ),
-      ),
-    );
-  }
-
-  bool _isProbablyUrl(String str) {
-    return str.startsWith('http://') || str.startsWith('https://');
   }
 }
